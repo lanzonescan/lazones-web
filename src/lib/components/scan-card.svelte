@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { Scan } from '$lib/server/db/schema';
-	import { humanizeClass, relativeTime } from '$lib/utils/humanize';
+	import { humanizeClass, shortRelativeTime } from '$lib/utils/humanize';
 
 	let { scan }: { scan: Scan } = $props();
 
@@ -12,14 +12,14 @@
 
 	const label = $derived(top ? humanizeClass(top.class) : 'No detections');
 	const count = $derived(scan.detections.length);
-	const when = $derived(relativeTime(scan.createdAt));
+	const when = $derived(shortRelativeTime(scan.createdAt));
 </script>
 
 <a
 	href="/history/{scan.id}"
-	class="group block rounded-lg border-2 border-border bg-[var(--white)] shadow-offset transition-all duration-150 hover:-translate-y-0.5 hover:border-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+	class="group block overflow-hidden rounded-lg border-2 border-border bg-[var(--white)] shadow-offset transition-all duration-150 hover:-translate-y-0.5 hover:border-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
 >
-	<div class="relative overflow-hidden rounded-t-md">
+	<div class="relative">
 		<img
 			src={scan.cloudinaryUrl}
 			alt={label}
@@ -38,7 +38,7 @@
 		<h3 class="truncate font-serif text-base leading-tight text-foreground">
 			{label}
 		</h3>
-		<p class="mt-1 text-[11px] uppercase tracking-wider text-muted-foreground">
+		<p class="mt-1 text-[11px] uppercase tracking-wider text-muted-foreground whitespace-normal break-words">
 			{count}
 			{count === 1 ? 'detection' : 'detections'}
 			<span class="mx-1 opacity-50">·</span>
