@@ -35,3 +35,4 @@ build
 *.db
 *.db-shm
 *.db-wal
+.gstack/
