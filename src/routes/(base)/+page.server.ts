@@ -7,17 +7,22 @@ import type { PageServerLoad } from "./$types";
 export const load: PageServerLoad = async ({ locals }) => {
   const userId = locals.user!.id;
 
-  const recent = await db
-    .select()
-    .from(scans)
-    .where(eq(scans.userId, userId))
-    .orderBy(desc(scans.createdAt))
-    .limit(5);
+  try {
+    const recent = await db
+      .select()
+      .from(scans)
+      .where(eq(scans.userId, userId))
+      .orderBy(desc(scans.createdAt))
+      .limit(5);
 
-  const [{ total }] = await db
-    .select({ total: sql<number>`count(*)` })
-    .from(scans)
-    .where(eq(scans.userId, userId));
+    const [{ total }] = await db
+      .select({ total: sql<number>`count(*)` })
+      .from(scans)
+      .where(eq(scans.userId, userId));
 
-  return { recent, total };
+    return { recent, total };
+  } catch (err) {
+    console.error("[dashboard] failed to load scans", err);
+    return { recent: [], total: 0, loadError: true };
+  }
 };
