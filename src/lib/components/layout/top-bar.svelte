@@ -58,7 +58,7 @@
 	<div class="items-center grid grid-cols-[auto_1fr_auto] mx-auto px-4 md:px-8 max-w-5xl h-14">
 		<a href="/" class="flex items-center gap-2.5 text-lg shrink-0">
 			<img
-				src="/favicon.png"
+				src="/favicon-sm.png"
 				alt=""
 				class="size-9 rounded-[10px] shadow-offset-sm border border-border/60"
 			/>
