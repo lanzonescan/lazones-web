@@ -10,6 +10,7 @@ import { deleteImage, uploadImage } from "$lib/server/cloudinary";
 import { db } from "$lib/server/db";
 import { scans } from "$lib/server/db/schema";
 import { generateId } from "$lib/server/db/utils";
+import { buildAdvice } from "$lib/server/plant-care";
 
 import type { Actions } from "./$types";
 
@@ -66,6 +67,7 @@ export const actions: Actions = {
       cloudinaryUrl: cloud.secure_url,
       cloudinaryPublicId: cloud.public_id,
       detections: analysis.detections,
+      advice: buildAdvice(analysis.detections),
       imageWidth: cloud.width,
       imageHeight: cloud.height,
       conf: 0.25,

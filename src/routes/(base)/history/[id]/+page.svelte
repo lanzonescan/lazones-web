@@ -8,6 +8,7 @@
 
 	const sorted = $derived([...data.scan.detections].sort((a, b) => b.confidence - a.confidence));
 	const topLabel = $derived(sorted.length > 0 ? humanizeClass(sorted[0].class) : 'Scan detail');
+	const advice = $derived(data.scan.advice);
 </script>
 
 <svelte:head><title>Scan detail | Lanzones Scan</title></svelte:head>
@@ -40,6 +41,23 @@
 			</ul>
 		{/if}
 	</Card>
+
+	{#if advice}
+		<Card>
+			{#snippet header()}
+				<div class="flex items-baseline justify-between">
+					<span class="font-serif text-base">Care tips for {advice.label}</span>
+					<span class="text-muted-foreground text-xs uppercase tracking-wide">{advice.class}</span>
+				</div>
+			{/snippet}
+			<p class="text-sm text-muted-foreground mb-3">{advice.summary}</p>
+			<ul class="space-y-2 text-sm list-disc pl-5 marker:text-muted-foreground">
+				{#each advice.tips as tip (tip)}
+					<li>{tip}</li>
+				{/each}
+			</ul>
+		</Card>
+	{/if}
 
 	<a href="/history" class="inline-block text-primary hover:underline">← Back to history</a>
 </div>

@@ -8,6 +8,13 @@ export type Detection = {
   bbox: [number, number, number, number];
 };
 
+export type Advice = {
+  class: string;
+  label: string;
+  summary: string;
+  tips: string[];
+};
+
 export const scans = sqliteTable("scans", {
   id: text("id").primaryKey(),
   userId: text("user_id")
@@ -19,6 +26,7 @@ export const scans = sqliteTable("scans", {
   detections: text("detections", { mode: "json" })
     .$type<Detection[]>()
     .notNull(),
+  advice: text("advice", { mode: "json" }).$type<Advice>(),
   imageWidth: integer("image_width").notNull(),
   imageHeight: integer("image_height").notNull(),
   conf: real("conf").notNull(),
