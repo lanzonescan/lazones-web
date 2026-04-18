@@ -1,27 +1,48 @@
 <script lang="ts">
-	import Card from '$lib/components/card.svelte';
 	import type { Scan } from '$lib/server/db/schema';
+	import { humanizeClass, relativeTime } from '$lib/utils/humanize';
 
 	let { scan }: { scan: Scan } = $props();
 
-	const topClass = $derived(
+	const top = $derived(
 		scan.detections.length > 0
-			? [...scan.detections].sort((a, b) => b.confidence - a.confidence)[0].class
-			: 'no detections'
+			? [...scan.detections].sort((a, b) => b.confidence - a.confidence)[0]
+			: null
 	);
+
+	const label = $derived(top ? humanizeClass(top.class) : 'No detections');
+	const count = $derived(scan.detections.length);
+	const when = $derived(relativeTime(scan.createdAt));
 </script>
 
-<a href="/history/{scan.id}" class="block">
-	<Card>
+<a
+	href="/history/{scan.id}"
+	class="group block rounded-lg border-2 border-border bg-[var(--white)] shadow-offset transition-all duration-150 hover:-translate-y-0.5 hover:border-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+>
+	<div class="relative overflow-hidden rounded-t-md">
 		<img
 			src={scan.cloudinaryUrl}
-			alt={scan.filename}
-			class="w-full aspect-square object-cover rounded mb-3"
+			alt={label}
+			class="aspect-[4/5] w-full object-cover transition-transform duration-300 ease-out group-hover:scale-[1.03]"
+			loading="lazy"
 		/>
-		<div class="space-y-1">
-			<div class="text-sm font-semibold truncate">{scan.filename}</div>
-			<div class="text-xs text-muted-foreground">{topClass}</div>
-			<div class="text-xs text-muted-foreground">{new Date(scan.createdAt).toLocaleString()}</div>
-		</div>
-	</Card>
+		{#if top}
+			<span
+				class="absolute top-2 right-2 rounded-full bg-black/70 px-2 py-0.5 text-[11px] font-semibold text-white shadow-sm backdrop-blur-sm"
+			>
+				{Math.round(top.confidence * 100)}%
+			</span>
+		{/if}
+	</div>
+	<div class="px-3.5 py-3">
+		<h3 class="truncate font-serif text-base leading-tight text-foreground">
+			{label}
+		</h3>
+		<p class="mt-1 text-[11px] uppercase tracking-wider text-muted-foreground">
+			{count}
+			{count === 1 ? 'detection' : 'detections'}
+			<span class="mx-1 opacity-50">·</span>
+			{when}
+		</p>
+	</div>
 </a>

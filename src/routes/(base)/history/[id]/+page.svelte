@@ -2,16 +2,18 @@
 	import PageHeader from '$lib/components/page-header.svelte';
 	import ScanResult from '$lib/components/scan-result.svelte';
 	import Card from '$lib/components/card.svelte';
+	import { humanizeClass, relativeTime } from '$lib/utils/humanize';
 
 	let { data } = $props();
 
 	const sorted = $derived([...data.scan.detections].sort((a, b) => b.confidence - a.confidence));
+	const topLabel = $derived(sorted.length > 0 ? humanizeClass(sorted[0].class) : 'Scan detail');
 </script>
 
 <svelte:head><title>Scan detail | Lanzones Scan</title></svelte:head>
 
 <div class="mx-auto max-w-5xl p-6 space-y-6 fade-in">
-	<PageHeader title={data.scan.filename} description="Detections with bounding boxes." />
+	<PageHeader title={topLabel} description={relativeTime(data.scan.createdAt)} />
 
 	<div class="flex justify-center">
 		<ScanResult
@@ -31,7 +33,7 @@
 			<ul class="divide-y divide-border">
 				{#each sorted as d, i (i)}
 					<li class="py-2 flex justify-between text-sm">
-						<span class="font-semibold">{d.class}</span>
+						<span class="font-semibold">{humanizeClass(d.class)}</span>
 						<span class="text-muted-foreground">{Math.round(d.confidence * 100)}%</span>
 					</li>
 				{/each}

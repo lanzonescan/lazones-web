@@ -2,6 +2,7 @@
 	import PageHeader from '$lib/components/page-header.svelte';
 	import EmptyState from '$lib/components/empty-state.svelte';
 	import Card from '$lib/components/card.svelte';
+	import ScanCard from '$lib/components/scan-card.svelte';
 	import CameraIcon from 'phosphor-svelte/lib/Camera';
 
 	let { data } = $props();
@@ -31,21 +32,9 @@
 				description="Upload your first image to get started."
 			/>
 		{:else}
-			<div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+			<div class="grid gap-4 grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
 				{#each data.recent as scan (scan.id)}
-					<a href="/history/{scan.id}" class="block">
-						<Card>
-							<img
-								src={scan.cloudinaryUrl}
-								alt={scan.filename}
-								class="w-full aspect-video object-cover rounded mb-3"
-							/>
-							<div class="text-sm font-semibold truncate">{scan.filename}</div>
-							<div class="text-xs text-muted-foreground">
-								{scan.detections.length} detections
-							</div>
-						</Card>
-					</a>
+					<ScanCard {scan} />
 				{/each}
 			</div>
 		{/if}
