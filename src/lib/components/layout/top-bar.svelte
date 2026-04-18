@@ -63,7 +63,7 @@
 				class="size-9 rounded-[10px] shadow-offset-sm border border-border/60"
 			/>
 			<div class="leading-none">
-				<h1 class="font-serif text-[17px]">Lanzones</h1>
+				<span class="font-serif text-[17px] block">Lanzones</span>
 				<p class="bg-primary/20 px-2 mt-0.5 inline-block rounded-full text-[10px] uppercase tracking-wider">
 					Scan
 				</p>
