@@ -292,4 +292,13 @@
 			{/if}
 		</div>
 	</section>
+
+	<div class="pt-4 text-center">
+		<a
+			href="/about"
+			class="text-sm text-muted-foreground hover:text-foreground underline-offset-4 hover:underline"
+		>
+			Learn more about Lanzones Scan →
+		</a>
+	</div>
 </div>
