@@ -3,6 +3,7 @@ import { fail, redirect } from "@sveltejs/kit";
 import {
   analyzeImage,
   UpstreamAuthError,
+  UpstreamBlockedError,
   UpstreamImageError,
   UpstreamRateLimitError,
 } from "$lib/server/lanzones-api";
@@ -53,6 +54,11 @@ export const actions: Actions = {
       }
       if (e instanceof UpstreamAuthError) {
         return fail(502, { error: "Upstream auth misconfigured." });
+      }
+      if (e instanceof UpstreamBlockedError) {
+        return fail(502, {
+          error: "Upstream blocked the request (bot protection). Try again shortly.",
+        });
       }
       if (e instanceof UpstreamImageError) {
         return fail(400, { error: e.message || "Couldn't read that image." });

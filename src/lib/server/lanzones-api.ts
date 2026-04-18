@@ -6,6 +6,7 @@ import {
   LANZONESSCAN_JWT_SECRET,
   LANZONESSCAN_JWT_TTL_SECONDS,
 } from "$env/static/private";
+import { env } from "$env/dynamic/private";
 
 import type { Detection } from "$lib/server/db/schema";
 
@@ -18,6 +19,7 @@ export class UpstreamRateLimitError extends Error {
   }
 }
 export class UpstreamImageError extends Error {}
+export class UpstreamBlockedError extends Error {}
 export class UpstreamError extends Error {
   status: number;
   constructor(status: number, message: string) {
@@ -54,9 +56,13 @@ export async function analyzeImage(
   const body = new FormData();
   body.append("file", new Blob([bytes as BlobPart], { type: contentType }), filename);
 
+  const headers: Record<string, string> = { Authorization: `Bearer ${jwt}` };
+  const proxySecret = env.LANZONESSCAN_PROXY_SECRET;
+  if (proxySecret) headers["X-Proxy-Secret"] = proxySecret;
+
   const res = await fetch(`${LANZONESSCAN_API_URL}/analyze`, {
     method: "POST",
-    headers: { Authorization: `Bearer ${jwt}` },
+    headers,
     body,
   });
 
@@ -65,6 +71,12 @@ export async function analyzeImage(
   if (res.status === 400 || res.status === 413 || res.status === 415) {
     throw new UpstreamImageError(await res.text());
   }
-  if (!res.ok) throw new UpstreamError(res.status, await res.text());
+  if (!res.ok) {
+    const text = await res.text();
+    if (res.status === 403 && /cf_chl_opt|challenge-platform|Just a moment/.test(text)) {
+      throw new UpstreamBlockedError("Blocked by upstream bot protection");
+    }
+    throw new UpstreamError(res.status, text);
+  }
   return res.json();
 }
