@@ -370,7 +370,7 @@
 				loading={submitting}
 				type="submit"
 				class="w-full"
-				disabled={!preview}
+				disabled={!preview || submitting}
 			>
 				{submitting ? 'Analyzing…' : preview ? 'Analyze' : 'Select an image'}
 			</LoadingButton>
