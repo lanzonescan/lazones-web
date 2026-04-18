@@ -47,7 +47,12 @@
 	{/if}
 
 	<section>
-		<h3 class="font-serif text-lg mb-3">Recent scans</h3>
+		<div class="flex items-center justify-between mb-3">
+			<h3 class="font-serif text-lg">Recent scans</h3>
+			{#if data.recent.length > 0}
+				<a href="/history" class="text-sm text-primary hover:underline">View all →</a>
+			{/if}
+		</div>
 		{#if data.recent.length === 0}
 			<EmptyState
 				icon={CameraIcon}

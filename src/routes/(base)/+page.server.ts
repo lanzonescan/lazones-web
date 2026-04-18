@@ -52,14 +52,16 @@ export const load: PageServerLoad = async ({ locals }) => {
   const userId = locals.user!.id;
 
   try {
-    const since = new Date(startOfDay(new Date()).getTime() - (DAYS - 1) * DAY_MS);
+    const since = new Date(
+      startOfDay(new Date()).getTime() - (DAYS - 1) * DAY_MS,
+    );
 
     const recent = await db
       .select()
       .from(scans)
       .where(eq(scans.userId, userId))
       .orderBy(desc(scans.createdAt))
-      .limit(5);
+      .limit(4);
 
     const [{ total }] = await db
       .select({ total: sql<number>`count(*)` })
