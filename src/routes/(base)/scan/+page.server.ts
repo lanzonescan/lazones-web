@@ -44,6 +44,7 @@ export const actions: Actions = {
     try {
       analysis = await analyzeImage(bytes, file.name, file.type, userId);
     } catch (e) {
+      console.error("[scan] analysis failed", e);
       await deleteImage(cloud.public_id).catch(() => {});
       if (e instanceof UpstreamRateLimitError) {
         return fail(429, {
