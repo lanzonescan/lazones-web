@@ -60,11 +60,11 @@
 			<img
 				src="/favicon-sm.png"
 				alt=""
-				class="size-9 rounded-[10px] shadow-offset-sm border border-border/60"
+				class="shadow-offset-sm border border-border/60 rounded-[10px] size-9"
 			/>
 			<div class="leading-none">
-				<span class="font-serif text-[17px] block">Lanzones</span>
-				<p class="bg-primary/20 px-2 mt-0.5 inline-block rounded-full text-[10px] uppercase tracking-wider">
+				<span class="block font-serif text-[17px]">Lanzones</span>
+				<p class="inline-block bg-primary/20 mt-0.5 px-2 py-1 rounded-full text-[10px] uppercase tracking-wider">
 					Scan
 				</p>
 			</div>
