@@ -50,52 +50,60 @@ function countByClass(
 
 export const load: PageServerLoad = async ({ locals }) => {
   const userId = locals.user!.id;
+  const since = new Date(
+    startOfDay(new Date()).getTime() - (DAYS - 1) * DAY_MS,
+  );
 
+  let total = 0;
   try {
-    const since = new Date(
-      startOfDay(new Date()).getTime() - (DAYS - 1) * DAY_MS,
-    );
-
-    const recent = await db
-      .select()
-      .from(scans)
-      .where(eq(scans.userId, userId))
-      .orderBy(desc(scans.createdAt))
-      .limit(4);
-
-    const [{ total }] = await db
+    const rows = await db
       .select({ total: sql<number>`count(*)` })
       .from(scans)
       .where(eq(scans.userId, userId));
-
-    const activityRows = await db
-      .select({
-        day: sql<string>`strftime('%Y-%m-%d', ${scans.createdAt} / 1000, 'unixepoch', 'localtime')`,
-        count: sql<number>`count(*)`,
-      })
-      .from(scans)
-      .where(and(eq(scans.userId, userId), gte(scans.createdAt, since)))
-      .groupBy(sql`1`);
-
-    const classRows = await db
-      .select({ detections: scans.detections })
-      .from(scans)
-      .where(eq(scans.userId, userId));
-
-    return {
-      recent,
-      total,
-      activity: buildActivitySeries(activityRows),
-      classCounts: countByClass(classRows),
-    };
+    total = rows[0]?.total ?? 0;
   } catch (err) {
-    console.error("[dashboard] failed to load scans", err);
-    return {
-      recent: [],
-      total: 0,
-      activity: [] as { date: Date; count: number }[],
-      classCounts: [] as { class: string; count: number }[],
-      loadError: true,
-    };
+    console.error("[dashboard] failed to load total", err);
   }
+
+  const recent = db
+    .select()
+    .from(scans)
+    .where(eq(scans.userId, userId))
+    .orderBy(desc(scans.createdAt))
+    .limit(4)
+    .catch((err) => {
+      console.error("[dashboard] failed to load recent scans", err);
+      return [];
+    });
+
+  const activity = db
+    .select({
+      day: sql<string>`strftime('%Y-%m-%d', ${scans.createdAt} / 1000, 'unixepoch', 'localtime')`,
+      count: sql<number>`count(*)`,
+    })
+    .from(scans)
+    .where(and(eq(scans.userId, userId), gte(scans.createdAt, since)))
+    .groupBy(sql`1`)
+    .then(buildActivitySeries)
+    .catch((err) => {
+      console.error("[dashboard] failed to load activity", err);
+      return buildActivitySeries([]);
+    });
+
+  const classCounts = db
+    .select({ detections: scans.detections })
+    .from(scans)
+    .where(eq(scans.userId, userId))
+    .then(countByClass)
+    .catch((err) => {
+      console.error("[dashboard] failed to load class counts", err);
+      return [] as { class: string; count: number }[];
+    });
+
+  return {
+    total,
+    recent,
+    activity,
+    classCounts,
+  };
 };

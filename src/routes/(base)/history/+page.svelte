@@ -3,6 +3,7 @@
 	import PageHeader from '$lib/components/page-header.svelte';
 	import EmptyState from '$lib/components/empty-state.svelte';
 	import ScanCard from '$lib/components/scan-card.svelte';
+	import ScanCardSkeleton from '$lib/components/scan-card-skeleton.svelte';
 	import Button from '$lib/components/ui/button.svelte';
 	import CameraIcon from 'phosphor-svelte/lib/Camera';
 
@@ -26,7 +27,7 @@
 <div class="mx-auto max-w-6xl p-6 space-y-6 fade-in">
 	<PageHeader title="History" description="Your past lanzones scans." />
 
-	{#if data.scans.length === 0}
+	{#if data.total === 0}
 		<EmptyState
 			icon={CameraIcon}
 			title="Nothing here yet"
@@ -40,11 +41,19 @@
 			{/snippet}
 		</EmptyState>
 	{:else}
-		<div class="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-			{#each data.scans as scan (scan.id)}
-				<ScanCard {scan} />
-			{/each}
-		</div>
+		{@const expected = Math.min(data.pageSize, data.total - (data.page - 1) * data.pageSize)}
+		{#await data.scans}
+			<div class="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+				{#each Array(expected) as _, i (i)}
+					<ScanCardSkeleton />
+				{/each}
+			</div>
+		{:then scans}
+			<div class="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+				{#each scans as scan (scan.id)}
+					<ScanCard {scan} />
+				{/each}
+			</div>
 
 		{#if data.totalPages > 1}
 			<nav class="flex items-center justify-between gap-2 pt-4 sm:justify-center" aria-label="Pagination">
@@ -113,5 +122,6 @@
 				{/if}
 			</nav>
 		{/if}
+		{/await}
 	{/if}
 </div>
