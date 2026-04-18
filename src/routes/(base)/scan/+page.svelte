@@ -3,7 +3,10 @@
 	import PageHeader from '$lib/components/page-header.svelte';
 	import LoadingButton from '$lib/components/loading-button.svelte';
 	import Card from '$lib/components/card.svelte';
+	import Button from '$lib/components/ui/button.svelte';
 	import CloudArrowUp from 'phosphor-svelte/lib/CloudArrowUp';
+	import Camera from 'phosphor-svelte/lib/Camera';
+	import UploadSimple from 'phosphor-svelte/lib/UploadSimple';
 	import ImageSquare from 'phosphor-svelte/lib/ImageSquare';
 	import X from 'phosphor-svelte/lib/X';
 	import { toast } from 'svelte-sonner';
@@ -13,6 +16,9 @@
 	let preview: string | null = $state(null);
 	let fileMeta: { name: string; size: number } | null = $state(null);
 	let fileInput: HTMLInputElement;
+	let cameraOpen = $state(false);
+	let videoEl: HTMLVideoElement | null = $state(null);
+	let stream: MediaStream | null = null;
 
 	const ACCEPTED = ['image/jpeg', 'image/png', 'image/webp'];
 	const MAX_SIZE = 10 * 1024 * 1024;
@@ -44,8 +50,10 @@
 	}
 
 	function onInputChange(e: Event) {
-		const file = (e.target as HTMLInputElement).files?.[0];
+		const input = e.target as HTMLInputElement;
+		const file = input.files?.[0];
 		if (file) applyFile(file);
+		if (input !== fileInput) input.value = '';
 	}
 
 	function onDrop(e: DragEvent) {
@@ -86,6 +94,87 @@
 		fileMeta = null;
 		fileInput.value = '';
 	}
+
+	function stopStream() {
+		if (stream) {
+			for (const track of stream.getTracks()) track.stop();
+			stream = null;
+		}
+	}
+
+	async function openCamera() {
+		if (!navigator.mediaDevices?.getUserMedia) {
+			toast.error('Camera unavailable', {
+				description: 'This browser does not support camera access.'
+			});
+			fileInput.click();
+			return;
+		}
+		try {
+			const media = await navigator.mediaDevices.getUserMedia({
+				video: { facingMode: 'environment' },
+				audio: false
+			});
+			stream = media;
+			cameraOpen = true;
+		} catch (err) {
+			if (
+				err instanceof DOMException &&
+				(err.name === 'NotAllowedError' || err.name === 'SecurityError')
+			) {
+				toast.error('Camera access denied', {
+					description: 'Enable camera permission in your browser settings and try again.'
+				});
+				return;
+			}
+			const message = err instanceof Error ? err.message : 'Unable to access camera.';
+			toast.error('Camera unavailable', { description: message });
+			fileInput.click();
+		}
+	}
+
+	function closeCamera() {
+		stopStream();
+		cameraOpen = false;
+	}
+
+	const MAX_CAPTURE_DIM = 1600;
+
+	function capturePhoto() {
+		if (!videoEl || !stream) return;
+		const vw = videoEl.videoWidth;
+		const vh = videoEl.videoHeight;
+		if (!vw || !vh) return;
+		const scale = Math.min(1, MAX_CAPTURE_DIM / Math.max(vw, vh));
+		const width = Math.round(vw * scale);
+		const height = Math.round(vh * scale);
+		const canvas = document.createElement('canvas');
+		canvas.width = width;
+		canvas.height = height;
+		const ctx = canvas.getContext('2d');
+		if (!ctx) return;
+		ctx.drawImage(videoEl, 0, 0, width, height);
+		canvas.toBlob(
+			(blob) => {
+				if (!blob) return;
+				const file = new File([blob], `camera-${Date.now()}.jpg`, { type: 'image/jpeg' });
+				applyFile(file);
+				closeCamera();
+			},
+			'image/jpeg',
+			0.85
+		);
+	}
+
+	$effect(() => {
+		if (cameraOpen && videoEl && stream) {
+			videoEl.srcObject = stream;
+		}
+	});
+
+	$effect(() => {
+		return () => stopStream();
+	});
 </script>
 
 <svelte:head><title>Scan | Lanzones Scan</title></svelte:head>
@@ -125,19 +214,85 @@
 				tabindex="-1"
 			/>
 
-			{#if !preview}
-				<button
-					type="button"
-					onclick={() => fileInput.click()}
-					ondrop={onDrop}
-					ondragenter={onDragEnter}
-					ondragover={onDragOver}
-					ondragleave={onDragLeave}
-					aria-label="Upload image"
-					class="group relative block w-full overflow-hidden rounded-lg border-2 border-dashed p-10 text-left cursor-pointer transition-all duration-200 {dragOver
-						? 'border-primary bg-primary/5'
-						: 'border-border bg-accent/20 hover:bg-accent/40 hover:border-neutral-400'}"
-				>
+			{#if cameraOpen}
+				<div class="space-y-3 fade-in">
+					<div class="relative rounded-lg overflow-hidden border-2 border-border bg-black">
+						<video
+							bind:this={videoEl}
+							autoplay
+							playsinline
+							muted
+							class="block w-full max-h-96 object-contain"
+						></video>
+						<button
+							type="button"
+							onclick={closeCamera}
+							aria-label="Close camera"
+							class="absolute top-3 right-3 rounded-full border border-border bg-background/90 p-2 backdrop-blur transition-colors hover:bg-destructive hover:text-white hover:border-destructive"
+						>
+							<X size={16} weight="bold" />
+						</button>
+					</div>
+					<Button
+						type="button"
+						variant="primary"
+						onclick={capturePhoto}
+						class="h-14 w-full text-base"
+					>
+						<Camera size={22} weight="duotone" />
+						Capture
+					</Button>
+				</div>
+			{:else if !preview}
+				<div class="flex flex-col gap-3 md:hidden">
+					<Button
+						type="button"
+						variant="primary"
+						onclick={openCamera}
+						class="h-14 w-full text-base"
+					>
+						<Camera size={22} weight="duotone" />
+						Take photo
+					</Button>
+					<Button
+						type="button"
+						variant="secondary"
+						onclick={() => fileInput.click()}
+						class="h-11 w-full text-sm"
+					>
+						<UploadSimple size={18} weight="duotone" />
+						Upload from files
+					</Button>
+					<div class="text-center text-xs text-muted-foreground/70 pt-1 tracking-wide uppercase">
+						JPEG · PNG · WebP · up to 10 MB
+					</div>
+				</div>
+
+				<div class="hidden md:block space-y-3">
+					<div class="flex justify-end">
+						<Button
+							type="button"
+							variant="secondary"
+							onclick={openCamera}
+							aria-label="Take photo with camera"
+							class="h-10 w-10 p-0"
+						>
+							<Camera size={20} weight="duotone" />
+						</Button>
+					</div>
+
+					<button
+						type="button"
+						onclick={() => fileInput.click()}
+						ondrop={onDrop}
+						ondragenter={onDragEnter}
+						ondragover={onDragOver}
+						ondragleave={onDragLeave}
+						aria-label="Upload image"
+						class="group relative block w-full overflow-hidden rounded-lg border-2 border-dashed p-10 text-left cursor-pointer transition-all duration-200 {dragOver
+							? 'border-primary bg-primary/5'
+							: 'border-border bg-accent/20 hover:bg-accent/40 hover:border-neutral-400'}"
+					>
 					<div
 						class="pointer-events-none absolute inset-0 opacity-40"
 						style="background-image: radial-gradient(circle, var(--neutral-300) 1px, transparent 1px); background-size: 14px 14px;"
@@ -174,6 +329,7 @@
 						</div>
 					</div>
 				</button>
+				</div>
 			{:else}
 				<div class="space-y-3 fade-in">
 					<div
