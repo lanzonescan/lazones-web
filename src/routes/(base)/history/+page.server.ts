@@ -1,14 +1,22 @@
-import { desc, eq } from "drizzle-orm";
+import { desc, eq, sql } from "drizzle-orm";
 
 import { db } from "$lib/server/db";
 import { scans } from "$lib/server/db/schema";
 import type { PageServerLoad } from "./$types";
 
-const PAGE_SIZE = 24;
+const PAGE_SIZE = 8;
 
 export const load: PageServerLoad = async ({ locals, url }) => {
-  const page = Math.max(1, Number(url.searchParams.get("page") ?? "1"));
   const userId = locals.user!.id;
+
+  const [{ total }] = await db
+    .select({ total: sql<number>`count(*)` })
+    .from(scans)
+    .where(eq(scans.userId, userId));
+
+  const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
+  const requested = Math.max(1, Number(url.searchParams.get("page") ?? "1"));
+  const page = Math.min(requested, totalPages);
 
   const rows = await db
     .select()
@@ -18,5 +26,5 @@ export const load: PageServerLoad = async ({ locals, url }) => {
     .limit(PAGE_SIZE)
     .offset((page - 1) * PAGE_SIZE);
 
-  return { scans: rows, page, pageSize: PAGE_SIZE };
+  return { scans: rows, page, pageSize: PAGE_SIZE, total, totalPages };
 };
