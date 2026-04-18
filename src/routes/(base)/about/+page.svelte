@@ -11,7 +11,7 @@
 
 <svelte:head><title>About | Lanzones Scan</title></svelte:head>
 
-<div class="mx-auto max-w-3xl p-6 space-y-8 fade-in">
+<div class="space-y-8 mx-auto p-6 max-w-3xl fade-in">
 	<PageHeader
 		title="About Lanzones Scan"
 		description="A tool for identifying lanzones leaf conditions from photos, built for farmers, researchers, and students."
@@ -19,7 +19,7 @@
 
 	<section class="space-y-3">
 		<Card>
-			<p class="text-sm text-muted-foreground leading-relaxed">
+			<p class="text-muted-foreground text-sm leading-relaxed">
 				Lanzones Scan helps you monitor the health of lanzones trees by classifying leaf
 				conditions from a single photo. Upload or capture an image, and the app flags
 				whether the leaf looks healthy or shows signs of disease — so you can act early
@@ -30,7 +30,7 @@
 
 	<section class="space-y-3">
 		<h2 class="font-serif text-xl">How it works</h2>
-		<div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+		<div class="gap-3 grid grid-cols-1 md:grid-cols-3">
 			<Card>
 				<div class="space-y-2">
 					<Camera size={28} weight="duotone" class="text-primary" />
@@ -63,11 +63,11 @@
 
 	<section class="space-y-3">
 		<h2 class="font-serif text-xl">What we detect</h2>
-		<div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+		<div class="gap-3 grid grid-cols-1 sm:grid-cols-2">
 			<Card>
 				<div class="space-y-1">
 					<div class="flex items-center gap-2">
-						<span class="inline-block size-2.5 rounded-full bg-emerald-500"></span>
+						<span class="inline-block bg-emerald-500 rounded-full size-2.5"></span>
 						<span class="font-serif text-lg">Healthy</span>
 					</div>
 					<p class="text-muted-foreground text-sm">Vibrant, disease-free foliage.</p>
@@ -76,7 +76,7 @@
 			<Card>
 				<div class="space-y-1">
 					<div class="flex items-center gap-2">
-						<span class="inline-block size-2.5 rounded-full bg-amber-500"></span>
+						<span class="inline-block bg-amber-500 rounded-full size-2.5"></span>
 						<span class="font-serif text-lg">Dried leaf</span>
 					</div>
 					<p class="text-muted-foreground text-sm">
@@ -87,7 +87,7 @@
 			<Card>
 				<div class="space-y-1">
 					<div class="flex items-center gap-2">
-						<span class="inline-block size-2.5 rounded-full bg-orange-600"></span>
+						<span class="inline-block bg-orange-600 rounded-full size-2.5"></span>
 						<span class="font-serif text-lg">Leaf rust</span>
 					</div>
 					<p class="text-muted-foreground text-sm">
@@ -98,7 +98,7 @@
 			<Card>
 				<div class="space-y-1">
 					<div class="flex items-center gap-2">
-						<span class="inline-block size-2.5 rounded-full bg-slate-400"></span>
+						<span class="inline-block bg-slate-400 rounded-full size-2.5"></span>
 						<span class="font-serif text-lg">Powdery mildew</span>
 					</div>
 					<p class="text-muted-foreground text-sm">
@@ -116,7 +116,7 @@
 		</div>
 		<Card>
 			<div class="space-y-3">
-				<div class="text-xs uppercase tracking-wider text-muted-foreground">
+				<div class="text-muted-foreground text-xs uppercase tracking-wider">
 					Developed by
 				</div>
 				<div class="space-y-1">
@@ -124,8 +124,8 @@
 					<div class="font-semibold">Francis Kenrick O. Magallano</div>
 					<div class="font-semibold">Jake Vincent B. Guinea</div>
 				</div>
-				<p class="text-sm text-muted-foreground">
-					A capstone project — 2026.
+				<p class="text-muted-foreground text-sm">
+					A thesis project — 2026.
 					<span class="tabular-nums">· v{data.version}</span>
 				</p>
 			</div>
