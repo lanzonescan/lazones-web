@@ -180,7 +180,7 @@
 <svelte:head><title>Scan | Lanzones Scan</title></svelte:head>
 <svelte:window onpaste={onPaste} />
 
-<div class="mx-auto max-w-2xl p-6 space-y-6 fade-in">
+<div class="space-y-6 mx-auto p-6 max-w-2xl fade-in">
 	<PageHeader
 		title="New scan"
 		description="Drop, paste, or browse an image of your lanzones specimen for analysis."
@@ -216,7 +216,7 @@
 
 			{#if cameraOpen}
 				<div class="space-y-3 fade-in">
-					<div class="relative rounded-lg overflow-hidden border-2 border-border bg-black">
+					<div class="relative bg-black border-2 border-border rounded-lg overflow-hidden">
 						<video
 							bind:this={videoEl}
 							autoplay
@@ -228,7 +228,7 @@
 							type="button"
 							onclick={closeCamera}
 							aria-label="Close camera"
-							class="absolute top-3 right-3 rounded-full border border-border bg-background/90 p-2 backdrop-blur transition-colors hover:bg-destructive hover:text-white hover:border-destructive"
+							class="top-3 right-3 absolute bg-background/90 hover:bg-destructive backdrop-blur p-2 border border-border hover:border-destructive rounded-full hover:text-white transition-colors"
 						>
 							<X size={16} weight="bold" />
 						</button>
@@ -237,19 +237,19 @@
 						type="button"
 						variant="primary"
 						onclick={capturePhoto}
-						class="h-14 w-full text-base"
+						class="w-full h-14 text-base"
 					>
 						<Camera size={22} weight="duotone" />
 						Capture
 					</Button>
 				</div>
 			{:else if !preview}
-				<div class="flex flex-col gap-3 md:hidden">
+				<div class="md:hidden flex flex-col gap-3">
 					<Button
 						type="button"
 						variant="primary"
 						onclick={openCamera}
-						class="h-14 w-full text-base"
+						class="w-full h-14 text-base"
 					>
 						<Camera size={22} weight="duotone" />
 						Take photo
@@ -258,12 +258,12 @@
 						type="button"
 						variant="secondary"
 						onclick={() => fileInput.click()}
-						class="h-11 w-full text-sm"
+						class="w-full h-11 text-sm"
 					>
 						<UploadSimple size={18} weight="duotone" />
 						Upload from files
 					</Button>
-					<div class="text-center text-xs text-muted-foreground/70 pt-1 tracking-wide uppercase">
+					<div class="pt-1 text-muted-foreground/70 text-xs text-center uppercase tracking-wide">
 						JPEG · PNG · WebP · up to 10 MB
 					</div>
 				</div>
@@ -275,7 +275,7 @@
 							variant="secondary"
 							onclick={openCamera}
 							aria-label="Take photo with camera"
-							class="h-10 w-10 p-0"
+							class="p-0 w-10 h-10"
 						>
 							<Camera size={20} weight="duotone" />
 						</Button>
@@ -294,7 +294,7 @@
 							: 'border-border bg-accent/20 hover:bg-accent/40 hover:border-neutral-400'}"
 					>
 					<div
-						class="pointer-events-none absolute inset-0 opacity-40"
+						class="absolute inset-0 opacity-40 pointer-events-none"
 						style="background-image: radial-gradient(circle, var(--neutral-300) 1px, transparent 1px); background-size: 14px 14px;"
 					></div>
 
@@ -314,16 +314,16 @@
 							/>
 						</div>
 
-						<div class="text-center space-y-1">
-							<div class="font-serif text-xl text-foreground">
+						<div class="space-y-1 text-center">
+							<div class="font-serif text-foreground text-xl">
 								{dragOver ? 'Release to upload' : 'Drop your image here'}
 							</div>
-							<div class="text-sm text-muted-foreground">
-								or <span class="text-primary font-semibold">click to browse</span>
+							<div class="text-muted-foreground text-sm">
+								or <span class="font-semibold text-primary">click to browse</span>
 								<span class="mx-1 text-border">·</span>
 								paste from clipboard
 							</div>
-							<div class="text-xs text-muted-foreground/70 pt-2 tracking-wide uppercase">
+							<div class="pt-2 text-muted-foreground/70 text-xs uppercase tracking-wide">
 								JPEG · PNG · WebP · up to 10 MB
 							</div>
 						</div>
@@ -333,7 +333,7 @@
 			{:else}
 				<div class="space-y-3 fade-in">
 					<div
-						class="relative rounded-lg overflow-hidden border-2 border-border bg-accent/20"
+						class="relative bg-accent/20 border-2 border-border rounded-lg overflow-hidden"
 					>
 						<img
 							src={preview}
@@ -344,22 +344,22 @@
 							type="button"
 							onclick={clearPreview}
 							aria-label="Remove image"
-							class="absolute top-3 right-3 rounded-full border border-border bg-background/90 p-2 backdrop-blur transition-colors hover:bg-destructive hover:text-white hover:border-destructive"
+							class="top-3 right-3 absolute bg-background/90 hover:bg-destructive backdrop-blur p-2 border border-border hover:border-destructive rounded-full hover:text-white transition-colors"
 						>
 							<X size={16} weight="bold" />
 						</button>
 					</div>
 
-					<div class="flex items-center justify-between gap-3 text-sm">
+					<div class="flex justify-between items-center gap-3 text-sm">
 						<div class="flex items-center gap-2 min-w-0">
 							<ImageSquare
 								size={16}
 								weight="duotone"
-								class="shrink-0 text-muted-foreground"
+								class="text-muted-foreground shrink-0"
 							/>
-							<span class="truncate font-semibold">{fileMeta?.name}</span>
+							<span class="font-semibold truncate">{fileMeta?.name}</span>
 						</div>
-						<span class="shrink-0 text-muted-foreground tabular-nums">
+						<span class="tabular-nums text-muted-foreground shrink-0">
 							{fileMeta ? formatSize(fileMeta.size) : ''}
 						</span>
 					</div>
