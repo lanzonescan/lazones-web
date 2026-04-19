@@ -14,16 +14,16 @@
 <div class="space-y-8 mx-auto p-6 max-w-3xl fade-in">
 	<PageHeader
 		title="About Lanzones Scan"
-		description="A tool for identifying lanzones leaf conditions from photos, built for farmers, researchers, and students."
+		description="A tool for assessing lanzones health from photos, built for farmers, researchers, and students."
 	/>
 
 	<section class="space-y-3">
 		<Card>
 			<p class="text-muted-foreground text-sm leading-relaxed">
-				Lanzones Scan helps you monitor the health of lanzones trees by classifying leaf
-				conditions from a single photo. Upload or capture an image, and the app flags
-				whether the leaf looks healthy or shows signs of disease — so you can act early
-				and track outbreaks over time.
+				Lanzones Scan helps you monitor the health of lanzones trees from a single photo.
+				Upload or capture an image, and the app flags whether it looks healthy or shows
+				signs of disease — so you can act early and track outbreaks over time. Initial
+				models focus on leaf conditions, with coverage expanding over time.
 			</p>
 		</Card>
 	</section>
