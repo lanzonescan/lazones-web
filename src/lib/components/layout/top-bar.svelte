@@ -5,6 +5,7 @@
 	import { getTheme, setTheme } from '$lib/utils/theme.svelte';
 	import CaretDown from 'phosphor-svelte/lib/CaretDown';
 	import Check from 'phosphor-svelte/lib/Check';
+	import ClipboardText from 'phosphor-svelte/lib/ClipboardText';
 	import Monitor from 'phosphor-svelte/lib/Monitor';
 	import Moon from 'phosphor-svelte/lib/Moon';
 	import Shield from 'phosphor-svelte/lib/Shield';
@@ -226,6 +227,14 @@
 						>
 							<User class="size-4 text-(--neutral-500)" />
 							Profile
+						</a>
+						<a
+							href="/evaluation"
+							class="flex items-center gap-2.5 hover:bg-secondary px-3 py-2 rounded-md text-sm transition-all duration-100"
+							onclick={() => (menuOpen = false)}
+						>
+							<ClipboardText class="size-4 text-(--neutral-500)" />
+							Evaluation
 						</a>
 						{#if isAdmin}
 							<a
